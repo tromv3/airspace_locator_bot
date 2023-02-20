@@ -1,2 +1,4 @@
 /venv
-config.pyconfig.py
+config.py
+services/temp
+user.db
