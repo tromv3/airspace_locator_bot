@@ -1,0 +1,10 @@
+from telebot import types
+from telebot.types import InlineKeyboardMarkup
+
+
+def keyboard_plane(plane: set) -> InlineKeyboardMarkup:
+
+    markup = types.InlineKeyboardMarkup(row_width=2)
+    for air in plane:
+        markup.add(types.InlineKeyboardButton(f"Cамолет: {air}", url=f"https://skybrary.aero/aircraft/{air}"))
+    return markup

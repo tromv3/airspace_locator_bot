@@ -36,7 +36,11 @@ def draw_map(man_coordinates, aircraft_coordinates, bbox, path=os.path.join(os.g
     image_name = str(time.time()).replace('.', '_') + '.png'
     plt.savefig(os.path.join(path, image_name), dpi=200, bbox_inches='tight')
 
+    plt.clf()
+
     return image_name
+
+# TODO: Добавить легенду карты
 
 
 if __name__ == "__main__":

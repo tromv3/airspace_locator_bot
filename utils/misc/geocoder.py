@@ -1,8 +1,8 @@
-from config import dadata_token, dadata_secret
+from config_data import config
 from dadata import Dadata
 
 
-dadata = Dadata(dadata_token, dadata_secret)
+dadata = Dadata(config.DADATA_TOKEN, config.DADATA_SECRET_KEY)
 
 
 def geocoder(user_address: str):
