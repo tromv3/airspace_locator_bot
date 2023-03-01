@@ -7,12 +7,19 @@ from database.database import History
 
 @bot.message_handler(commands=["history"])
 def bot_history(message: Message) -> None:
+    """
+    Функция, для выполнения команды /history.
+
+    :argument:
+        message (Message): Ответ пользователя
+
+    """
     hist = list(History.select().where(History.user == message.from_user.id))
-    # TODO: Удаление старых записей
     bot.send_message(message.chat.id, "Выполненные Вами запросы:")
     text = ''
     for rec in hist:
-        text += f"{rec.command} | {str(rec.date)}"
+        text += f"{rec.date.strftime('%d-%m-%Y %H:%M:%S')} | {rec.command}\n"
+        text += "-" * 10 + "\n"
         if len(text) + 100 > 4000:
             bot.send_message(message.chat.id, text)
             text = ''

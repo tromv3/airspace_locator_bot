@@ -142,7 +142,7 @@ def show(message: Message):
             text += f"Широта: {air.latitude} | Долгота: {air.longitude}\n"
         if air.alt is not None:
             text += f"Высота: {air.alt}\n"
-        text += '-' * 25 + '\n'
+        text += '-' * 10 + '\n'
         if len(text) + 100 > 4000:
             bot.send_message(message.chat.id, text)
             text = ''
