@@ -7,8 +7,15 @@ else:
     load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-RAPID_API_KEY = os.getenv("RAPID_API_KEY")
+AIR_LABS_API_KEY = os.getenv("AIR_LABS_API_KEY")
+DADATA_TOKEN = os.getenv("DADATA_TOKEN")
+DADATA_SECRET_KEY = os.getenv("DADATA_SECRET_KEY")
+
 DEFAULT_COMMANDS = (
     ("start", "Запустить бота"),
-    ("help", "Вывести справку")
+    ("help", "Вывести справку"),
+    ("cancel", "Вернуться к главному меню"),
+    ("history", "Показать выполненные запросы")
 )
+
+# TODO: Привести справку в порядок
