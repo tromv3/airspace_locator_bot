@@ -4,7 +4,6 @@ from loader import bot
 from keyboards.reply.keyboard_start import keyboard_start
 
 
-# TODO: Отлавливать /cancel в любом state
 @bot.message_handler(commands=["cancel"], state="*")
 def bot_cancel(message: Message) -> None:
     bot.delete_state(message.from_user.id, message.chat.id)
