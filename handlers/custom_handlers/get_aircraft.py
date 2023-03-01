@@ -41,7 +41,7 @@ def get_air(message: Message) -> None:
         message (Message): Ответ пользователя
 
     """
-    if 150 <= int(message.text) <= 500:
+    if 100 <= int(message.text) <= 500:
         bot.set_state(message.from_user.id, GetAircraftState.filters, message.chat.id)
         user = User.get(User.id == message.chat.id)
         get_aircraft(user, int(message.text))
