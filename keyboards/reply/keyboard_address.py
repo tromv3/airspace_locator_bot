@@ -3,6 +3,12 @@ from telebot.types import ReplyKeyboardMarkup
 
 
 def keyboard_address() -> ReplyKeyboardMarkup:
+    """
+    Функция для создания клавиатуры (клавиатура для ввода адреса)
+
+    :return: ReplyKeyboardMarkup
+
+    """
 
     markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     button_s_address = types.KeyboardButton(text="Ввести адрес")

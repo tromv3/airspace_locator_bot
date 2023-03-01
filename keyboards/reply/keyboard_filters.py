@@ -3,6 +3,12 @@ from telebot.types import ReplyKeyboardMarkup
 
 
 def keyboard_filters() -> ReplyKeyboardMarkup:
+    """
+    Функция для создания клавиатуры (клавиатура для выбора фильтра)
+
+    :return: ReplyKeyboardMarkup
+
+    """
 
     markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     button_alt_max = types.KeyboardButton(text="Фильтр по высоте (max)")
