@@ -20,4 +20,4 @@ def bot_start(message: Message) -> None:
         user = User.create(id=message.from_user.id,
                            name=f'{message.from_user.first_name} {message.from_user.last_name}')
     bot.send_message(message.chat.id, f" Привет, {user}!\n", reply_markup=keyboard_start())
-    save_history(message.from_user.id, "/start")
+    save_history(message.from_user.id, "Запустить бота")

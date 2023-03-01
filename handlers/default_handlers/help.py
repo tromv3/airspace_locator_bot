@@ -16,5 +16,5 @@ def bot_help(message: Message) -> None:
     """
     text = [f"/{command} - {desk}" for command, desk in DEFAULT_COMMANDS]
     bot.reply_to(message, "\n".join(text))
-    save_history(message.from_user.id, "/help")
+    save_history(message.from_user.id, "Вывести справку")
 

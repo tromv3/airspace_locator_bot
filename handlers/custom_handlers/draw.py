@@ -1,15 +1,24 @@
 import os
-from telebot import types
+
 from telebot.types import Message
+from loguru import logger
 
 from loader import bot
 from database.database import User, Aircraft
 from keyboards.reply.keyboard_start import keyboard_start
 from utils.misc.map import draw_map
+from utils.save_history import save_history
 
 
 @bot.message_handler(content_types=["text"], func=lambda message: message.text == "Отрисовать полученные данные")
 def draw(message: Message) -> None:
+    """
+    Функция, для выполнения запроса пользователя "Отрисовать полученные данные".
+
+    :argument:
+        message (Message): Ответ пользователя
+
+    """
     try:
         aircraft = list(Aircraft.select().where(Aircraft.user == message.from_user.id))
         if len(aircraft) == 0:
@@ -37,7 +46,11 @@ def draw(message: Message) -> None:
 
             if os.path.isfile(os.path.join(os.getcwd(), 'temp', f'{name_map}')):
                 os.remove(os.path.join(os.getcwd(), 'temp', f'{name_map}'))
+
+            save_history(message.from_user.id, "Отрисовать полученные данные")
+
             bot.send_message(message.chat.id, f"{user}, что дальше?\n",
                              reply_markup=keyboard_start())
-    except:
+    except Exception as error:
+        logger.error(error.__class__.__name__)
         bot.send_message(message.chat.id, 'Что-то пошло не так, попробуйте еще раз', reply_markup=keyboard_start())
