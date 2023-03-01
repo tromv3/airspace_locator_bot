@@ -14,9 +14,11 @@ AIR_LABS_API_KEY = os.getenv("AIR_LABS_API_KEY")
 DADATA_TOKEN = os.getenv("DADATA_TOKEN")
 DADATA_SECRET_KEY = os.getenv("DADATA_SECRET_KEY")
 
+count_req = 50  # Количество запросов пользователя храниться в БД
+
 DEFAULT_COMMANDS = (
     ("start", "Запустить бота"),
     ("cancel", "Вернуться к главному меню"),
-    ("history", "Показать выполненные запросы"),
+    ("history", f"Показать выполненные запросы (последние {str(count_req)})"),
     ("help", "Вывести справку"),
 )

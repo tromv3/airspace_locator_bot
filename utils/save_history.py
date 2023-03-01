@@ -1,4 +1,5 @@
 from database.database import User, History
+from config_data.config import count_req
 
 
 def save_history(id_user: int, command: str) -> None:
@@ -11,5 +12,7 @@ def save_history(id_user: int, command: str) -> None:
 
     """
     History.create(user=User.get(id=id_user), command=command).save()
-    # requests = History.select().order_by(History.date)
-    # print(requests)
+    history = list(History.select().order_by(History.date))
+    if len(history) > count_req:
+        for req in history[0:-count_req]:
+            req.delete_instance()
