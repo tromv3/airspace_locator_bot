@@ -28,7 +28,7 @@
 
 - Клонировать Git репозиторий.
 ```sh 
-
+git clone https://github.com/tromv3/airspace_locator_bot.git
 ```
 - Сменить директорию.
 ```sh 
