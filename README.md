@@ -28,7 +28,7 @@
 
 - Клонировать Git репозиторий.
 ```sh 
-git clone https://gitlab.skillbox.ru/roman_tereshchenko/python_basic_diploma.git
+
 ```
 - Сменить директорию.
 ```sh 
