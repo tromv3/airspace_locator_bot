@@ -30,10 +30,11 @@ class UserRepository:
         user.location_lat = lat
         user.location_lon = lon
 
-    async def set_search_area(self, user_id: int, bbox: BBox) -> None:
+    async def set_search_area(self, user_id: int, bbox: BBox, distance_km: int) -> None:
         user = await self.get(user_id)
         user.bbox_min_lat = bbox.min_lat
         user.bbox_min_lon = bbox.min_lon
         user.bbox_max_lat = bbox.max_lat
         user.bbox_max_lon = bbox.max_lon
         user.last_req = datetime.datetime.now()
+        user.last_distance_km = distance_km

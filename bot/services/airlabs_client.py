@@ -1,7 +1,6 @@
-from dataclasses import dataclass
-
 import httpx
 
+from bot.services.flight_types import AircraftInfo
 from bot.services.geo_math import BBox
 
 BASE_URL = "https://airlabs.co/api/v9/"
@@ -9,16 +8,6 @@ BASE_URL = "https://airlabs.co/api/v9/"
 
 class AirLabsError(Exception):
     pass
-
-
-@dataclass(frozen=True)
-class AircraftInfo:
-    reg_number: str | None
-    flag: str | None
-    type_plane: str | None
-    latitude: float | None
-    longitude: float | None
-    alt: int | None
 
 
 class AirLabsClient:
@@ -59,4 +48,5 @@ def _aircraft_from_payload(item: dict) -> AircraftInfo:
         latitude=item.get("lat"),
         longitude=item.get("lng"),
         alt=item.get("alt"),
+        source="airlabs",
     )

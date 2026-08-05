@@ -3,7 +3,6 @@ from aiogram import Router
 from bot.handlers import (
     aircraft_info,
     cancel,
-    change_name,
     draw,
     fallback,
     get_aircraft,
@@ -21,7 +20,6 @@ def setup_routers() -> Router:
         help,
         cancel,
         history,
-        change_name,
         set_location,
         get_aircraft,
         draw,

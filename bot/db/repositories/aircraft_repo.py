@@ -1,10 +1,11 @@
 from collections.abc import Iterable
+from collections.abc import Sequence as TypingSequence
 
-from sqlalchemy import delete, func, select
+from sqlalchemy import ColumnElement, delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.db.models import Aircraft
-from bot.services.airlabs_client import AircraftInfo
+from bot.services.flight_types import AircraftInfo
 
 
 class AircraftRepository:
@@ -22,47 +23,61 @@ class AircraftRepository:
                 latitude=item.latitude,
                 longitude=item.longitude,
                 alt=item.alt,
+                source=item.source,
             )
             for item in aircraft
         )
         await self._session.flush()
 
-    async def list_for_user(self, user_id: int) -> list[Aircraft]:
-        result = await self._session.execute(select(Aircraft).where(Aircraft.user_id == user_id))
+    async def list_for_user(
+        self,
+        user_id: int,
+        *,
+        alt_min: int | None = None,
+        alt_max: int | None = None,
+        types: TypingSequence[str] | None = None,
+        flags: TypingSequence[str] | None = None,
+    ) -> list[Aircraft]:
+        conditions = self._build_conditions(user_id, alt_min, alt_max, types, flags)
+        result = await self._session.execute(select(Aircraft).where(*conditions))
         return list(result.scalars())
 
-    async def count_for_user(self, user_id: int) -> int:
+    async def count_for_user(
+        self,
+        user_id: int,
+        *,
+        alt_min: int | None = None,
+        alt_max: int | None = None,
+        types: TypingSequence[str] | None = None,
+        flags: TypingSequence[str] | None = None,
+    ) -> int:
+        conditions = self._build_conditions(user_id, alt_min, alt_max, types, flags)
         result = await self._session.execute(
-            select(func.count()).select_from(Aircraft).where(Aircraft.user_id == user_id)
+            select(func.count()).select_from(Aircraft).where(*conditions)
         )
         return result.scalar_one()
 
-    async def delete_where_alt_gte(self, user_id: int, value: int) -> None:
-        await self._session.execute(
-            delete(Aircraft).where(Aircraft.user_id == user_id, Aircraft.alt >= value)
-        )
+    def _build_conditions(
+        self,
+        user_id: int,
+        alt_min: int | None,
+        alt_max: int | None,
+        types: TypingSequence[str] | None,
+        flags: TypingSequence[str] | None,
+    ) -> list[ColumnElement[bool]]:
+        conditions: list[ColumnElement[bool]] = [Aircraft.user_id == user_id]
+        if alt_min is not None:
+            conditions.append(Aircraft.alt >= alt_min)
+        if alt_max is not None:
+            conditions.append(Aircraft.alt <= alt_max)
+        if types:
+            conditions.append(func.upper(Aircraft.type_plane).in_([t.upper() for t in types]))
+        if flags:
+            conditions.append(func.upper(Aircraft.flag).in_([f.upper() for f in flags]))
+        return conditions
 
-    async def delete_where_alt_lte(self, user_id: int, value: int) -> None:
-        await self._session.execute(
-            delete(Aircraft).where(Aircraft.user_id == user_id, Aircraft.alt <= value)
-        )
-
-    async def delete_where_type_not(self, user_id: int, type_plane: str) -> None:
-        # Case-insensitive compare: stored casing comes verbatim from AirLabs,
-        # while the filter value is whatever the user typed.
-        await self._session.execute(
-            delete(Aircraft).where(
-                Aircraft.user_id == user_id,
-                func.upper(Aircraft.type_plane) != type_plane.upper(),
-            )
-        )
-
-    async def delete_where_flag_not(self, user_id: int, flag: str) -> None:
-        await self._session.execute(
-            delete(Aircraft).where(
-                Aircraft.user_id == user_id, func.upper(Aircraft.flag) != flag.upper()
-            )
-        )
+    async def get_by_id(self, aircraft_id: int) -> Aircraft | None:
+        return await self._session.get(Aircraft, aircraft_id)
 
     async def distinct_types(self, user_id: int) -> set[str]:
         result = await self._session.execute(

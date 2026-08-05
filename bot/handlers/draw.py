@@ -8,7 +8,7 @@ from bot.db.repositories.history_repo import HistoryRepository
 from bot.db.repositories.user_repo import UserRepository
 from bot.keyboards.reply import main_menu_keyboard
 from bot.services.geo_math import BBox
-from bot.services.map_renderer import render_map
+from bot.services.map_renderer import AircraftPoint, render_map
 
 router = Router(name=__name__)
 
@@ -31,7 +31,7 @@ async def draw(message: Message, session: AsyncSession) -> None:
         max_lon=user.bbox_max_lon,
     )
     points = [
-        (item.latitude, item.longitude)
+        AircraftPoint(lat=item.latitude, lon=item.longitude, label=item.reg_number or "?")
         for item in aircraft
         if item.latitude is not None and item.longitude is not None
     ]

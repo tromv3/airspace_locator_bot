@@ -16,6 +16,8 @@ from bot.handlers import setup_routers
 from bot.middlewares.db import DbSessionMiddleware
 from bot.services.airlabs_client import AirLabsClient
 from bot.services.geocoder_client import DadataClient
+from bot.services.opensky_client import OpenSkyClient
+from bot.services.planespotters_client import PlanespottersClient
 
 
 async def main() -> None:
@@ -37,12 +39,16 @@ async def main() -> None:
     session_maker = create_session_maker(engine)
     dadata_client = DadataClient(settings.dadata_token, settings.dadata_secret_key)
     airlabs_client = AirLabsClient(settings.air_labs_api_key)
+    opensky_client = OpenSkyClient()
+    planespotters_client = PlanespottersClient()
 
     bot = Bot(token=settings.bot_token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dispatcher = Dispatcher(storage=MemoryStorage())
     dispatcher.update.middleware(DbSessionMiddleware(session_maker))
     dispatcher["dadata_client"] = dadata_client
     dispatcher["airlabs_client"] = airlabs_client
+    dispatcher["opensky_client"] = opensky_client
+    dispatcher["planespotters_client"] = planespotters_client
     dispatcher.include_router(setup_routers())
 
     try:
@@ -57,6 +63,8 @@ async def main() -> None:
     finally:
         await bot.session.close()
         await airlabs_client.aclose()
+        await opensky_client.aclose()
+        await planespotters_client.aclose()
         await dadata_client.aclose()
         await engine.dispose()
 

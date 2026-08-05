@@ -44,7 +44,7 @@ async def test_set_search_area_sets_bbox_and_last_req(session):
     await repo.get_or_create(1, "Ivan")
     bbox = BBox(min_lat=55.0, min_lon=37.0, max_lat=56.0, max_lon=38.0)
 
-    await repo.set_search_area(1, bbox)
+    await repo.set_search_area(1, bbox, 200)
 
     user = await repo.get(1)
     assert user.bbox_min_lat == 55.0
@@ -52,3 +52,4 @@ async def test_set_search_area_sets_bbox_and_last_req(session):
     assert user.bbox_max_lat == 56.0
     assert user.bbox_max_lon == 38.0
     assert user.last_req is not None
+    assert user.last_distance_km == 200

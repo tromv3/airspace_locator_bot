@@ -24,6 +24,7 @@ class User(Base):
     bbox_max_lon: Mapped[float | None] = mapped_column(default=None)
 
     last_req: Mapped[datetime.datetime | None] = mapped_column(default=None)
+    last_distance_km: Mapped[int | None] = mapped_column(default=None)
 
     aircraft: Mapped[list[Aircraft]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
@@ -48,6 +49,7 @@ class Aircraft(Base):
     latitude: Mapped[float | None] = mapped_column(default=None)
     longitude: Mapped[float | None] = mapped_column(default=None)
     alt: Mapped[int | None] = mapped_column(default=None)
+    source: Mapped[str] = mapped_column(default="airlabs", server_default="airlabs")
 
     user: Mapped[User] = relationship(back_populates="aircraft")
 

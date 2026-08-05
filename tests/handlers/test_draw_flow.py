@@ -1,8 +1,9 @@
 from bot.db.repositories.aircraft_repo import AircraftRepository
 from bot.db.repositories.user_repo import UserRepository
 from bot.handlers import draw
-from bot.services.airlabs_client import AircraftInfo
+from bot.services.flight_types import AircraftInfo
 from bot.services.geo_math import BBox
+from bot.services.map_renderer import AircraftPoint
 
 USER_ID = 1
 
@@ -28,7 +29,13 @@ class _FakeMessage:
 def _one_aircraft() -> list[AircraftInfo]:
     return [
         AircraftInfo(
-            reg_number="RA-1", flag="RU", type_plane="A320", latitude=1.0, longitude=2.0, alt=1000
+            reg_number="RA-1",
+            flag="RU",
+            type_plane="A320",
+            latitude=1.0,
+            longitude=2.0,
+            alt=1000,
+            source="airlabs",
         )
     ]
 
@@ -38,7 +45,7 @@ async def _with_user_and_search_area(session) -> None:
     await user_repo.get_or_create(USER_ID, "Ivan")
     await user_repo.set_location(USER_ID, 55.75, 37.62)
     bbox = BBox(min_lat=55.0, min_lon=37.0, max_lat=56.0, max_lon=38.0)
-    await user_repo.set_search_area(USER_ID, bbox)
+    await user_repo.set_search_area(USER_ID, bbox, 200)
 
 
 async def test_draw_requires_data_when_no_aircraft(session):
@@ -57,7 +64,7 @@ async def test_draw_renders_and_sends_photo(session, monkeypatch):
 
     async def fake_render_map(user_lat, user_lon, aircraft, bbox):
         assert (user_lat, user_lon) == (55.75, 37.62)
-        assert aircraft == [(1.0, 2.0)]
+        assert aircraft == [AircraftPoint(lat=1.0, lon=2.0, label="RA-1")]
         return b"\x89PNGfakebytes"
 
     monkeypatch.setattr(draw, "render_map", fake_render_map)
