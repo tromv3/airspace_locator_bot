@@ -6,7 +6,7 @@ from staticmap import StaticMap
 from staticmap.staticmap import _lat_to_y, _lon_to_x
 
 from bot.services.geo_math import BBox
-from bot.services.map_renderer import AircraftPoint, render_map
+from bot.services.map_renderer import MAP_HEIGHT, MAP_WIDTH, AircraftPoint, render_map
 
 _CENTER_LAT = 55.5
 _CENTER_LON = 37.5
@@ -15,10 +15,10 @@ _ZOOM = 10
 
 @pytest.fixture(autouse=True)
 def mock_tile_render(monkeypatch):
-    """Stub out the network tile fetch; capture markers/lines added before rendering.
+    """Stub out the network tile fetch; capture markers added before rendering.
 
     Centers the map on (_CENTER_LAT, _CENTER_LON) so pixel-placement math (used
-    both by staticmap's own markers and this project's label/legend drawing)
+    both by staticmap's own markers and this project's label/outline drawing)
     lands points near canvas center instead of off-screen.
     """
     captured = {}
@@ -29,7 +29,7 @@ def mock_tile_render(monkeypatch):
         self.zoom = _ZOOM
         self.x_center = _lon_to_x(_CENTER_LON, _ZOOM)
         self.y_center = _lat_to_y(_CENTER_LAT, _ZOOM)
-        return Image.new("RGB", (800, 600), "white")
+        return Image.new("RGB", (MAP_WIDTH, MAP_HEIGHT), "white")
 
     monkeypatch.setattr(StaticMap, "render", fake_render)
     return captured
@@ -38,8 +38,8 @@ def mock_tile_render(monkeypatch):
 async def test_render_map_adds_user_and_aircraft_markers(mock_tile_render):
     bbox = BBox(min_lat=55.0, min_lon=37.0, max_lat=56.0, max_lon=38.0)
     aircraft = [
-        AircraftPoint(lat=55.6, lon=37.6, label="RA-1"),
-        AircraftPoint(lat=55.4, lon=37.4, label="RA-2"),
+        AircraftPoint(lat=55.6, lon=37.6, label="1"),
+        AircraftPoint(lat=55.4, lon=37.4, label="2"),
     ]
 
     png_bytes = await render_map(55.5, 37.5, aircraft, bbox)
@@ -48,30 +48,34 @@ async def test_render_map_adds_user_and_aircraft_markers(mock_tile_render):
     markers = mock_tile_render["markers"]
     assert len(markers) == 3  # 2 aircraft + 1 user
     assert markers[-1].coord == (37.5, 55.5)  # user marker added last, coord is (lon, lat)
-    assert len(mock_tile_render["lines"]) == 1
+    # the search-radius outline is drawn by hand after render(), not passed as
+    # a staticmap Line, so it never influences the automatic zoom/center.
+    assert mock_tile_render["lines"] == []
 
 
-async def test_render_map_bbox_outline_is_closed_rectangle(mock_tile_render):
-    bbox = BBox(min_lat=10.0, min_lon=20.0, max_lat=11.0, max_lon=21.0)
+async def test_render_map_zoom_ignores_search_radius(mock_tile_render):
+    # A huge bbox (~300km+) must not prevent aircraft-only extent/zoom - the
+    # renderer no longer feeds the outline into staticmap's auto-zoom.
+    bbox = BBox(min_lat=53.0, min_lon=35.0, max_lat=58.0, max_lon=40.0)
 
-    await render_map(10.5, 20.5, [], bbox)
+    await render_map(55.5, 37.5, [AircraftPoint(lat=55.6, lon=37.6, label="1")], bbox)
 
-    line = mock_tile_render["lines"][0]
-    assert line.coords[0] == line.coords[-1]
-    assert set(line.coords) == {(20.0, 10.0), (21.0, 10.0), (21.0, 11.0), (20.0, 11.0)}
+    markers = mock_tile_render["markers"]
+    assert len(markers) == 2
+    assert mock_tile_render["lines"] == []
 
 
-async def test_render_map_draws_legend_over_blank_canvas(mock_tile_render):
-    bbox = BBox(min_lat=55.0, min_lon=37.0, max_lat=56.0, max_lon=38.0)
+async def test_render_map_draws_bbox_outline(mock_tile_render):
+    # This corner sits exactly at the map's center pixel given the fixture's
+    # fake center/zoom, so the hand-drawn outline should be visibly red there.
+    bbox = BBox(min_lat=_CENTER_LAT, min_lon=_CENTER_LON, max_lat=56.0, max_lon=38.0)
 
     png_bytes = await render_map(_CENTER_LAT, _CENTER_LON, [], bbox)
-    rendered = Image.open(BytesIO(png_bytes)).convert("RGBA")
+    rendered = Image.open(BytesIO(png_bytes)).convert("RGB")
 
-    # the legend's aircraft-color dot should be visible near its known offset
-    # from the top-left corner, distinctly bluer than the blank white canvas.
-    red, green, blue, _ = rendered.getpixel((18, 20))
-    assert blue > 150
-    assert red < 100 and green < 100
+    red, green, blue = rendered.getpixel((MAP_WIDTH // 2, MAP_HEIGHT // 2))
+    assert red > 150
+    assert green < 100 and blue < 100
 
 
 async def test_render_map_draws_label_near_aircraft_marker(mock_tile_render):
@@ -79,10 +83,7 @@ async def test_render_map_draws_label_near_aircraft_marker(mock_tile_render):
 
     without_label = await render_map(_CENTER_LAT, _CENTER_LON, [], bbox)
     with_label = await render_map(
-        _CENTER_LAT,
-        _CENTER_LON,
-        [AircraftPoint(lat=_CENTER_LAT, lon=_CENTER_LON, label="RA-1")],
-        bbox,
+        _CENTER_LAT, _CENTER_LON, [AircraftPoint(lat=_CENTER_LAT, lon=_CENTER_LON, label="1")], bbox
     )
 
     assert without_label != with_label

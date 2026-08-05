@@ -9,7 +9,7 @@ def main_menu_keyboard() -> ReplyKeyboardMarkup:
     builder.button(text="Повторить последний поиск")
     builder.button(text="Отрисовать полученные данные")
     builder.button(text="Подробно о воздушном судне")
-    builder.adjust(2)
+    builder.adjust(1)
     return builder.as_markup(resize_keyboard=True)
 
 

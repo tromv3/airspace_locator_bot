@@ -31,8 +31,8 @@ async def draw(message: Message, session: AsyncSession) -> None:
         max_lon=user.bbox_max_lon,
     )
     points = [
-        AircraftPoint(lat=item.latitude, lon=item.longitude, label=item.reg_number or "?")
-        for item in aircraft
+        AircraftPoint(lat=item.latitude, lon=item.longitude, label=str(index))
+        for index, item in enumerate(aircraft, start=1)
         if item.latitude is not None and item.longitude is not None
     ]
 

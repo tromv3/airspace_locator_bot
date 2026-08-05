@@ -368,7 +368,7 @@ async def test_filters_draw_renders_filtered_map(session, state, monkeypatch):
     callback = _FakeCallbackQuery("af:draw", message)
 
     async def fake_render_map(user_lat, user_lon, aircraft, bbox):
-        assert aircraft == [get_aircraft.AircraftPoint(lat=1.0, lon=2.0, label="RA-1")]
+        assert aircraft == [get_aircraft.AircraftPoint(lat=1.0, lon=2.0, label="1")]
         return b"\x89PNGfakebytes"
 
     monkeypatch.setattr(get_aircraft, "render_map", fake_render_map)

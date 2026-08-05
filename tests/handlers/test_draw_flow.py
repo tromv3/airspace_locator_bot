@@ -64,7 +64,7 @@ async def test_draw_renders_and_sends_photo(session, monkeypatch):
 
     async def fake_render_map(user_lat, user_lon, aircraft, bbox):
         assert (user_lat, user_lon) == (55.75, 37.62)
-        assert aircraft == [AircraftPoint(lat=1.0, lon=2.0, label="RA-1")]
+        assert aircraft == [AircraftPoint(lat=1.0, lon=2.0, label="1")]
         return b"\x89PNGfakebytes"
 
     monkeypatch.setattr(draw, "render_map", fake_render_map)

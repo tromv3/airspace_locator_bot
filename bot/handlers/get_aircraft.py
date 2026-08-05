@@ -346,7 +346,8 @@ async def filters_show(callback: CallbackQuery, state: FSMContext, session: Asyn
         return
 
     chunk = ""
-    for item in aircraft:
+    for index, item in enumerate(aircraft, start=1):
+        chunk += f"<b>№{index}</b>\n"
         if item.reg_number is not None:
             chunk += f"Рег. номер: {item.reg_number}\n"
         if item.flag is not None:
@@ -395,8 +396,8 @@ async def filters_draw(callback: CallbackQuery, state: FSMContext, session: Asyn
         max_lon=user.bbox_max_lon,
     )
     points = [
-        AircraftPoint(lat=item.latitude, lon=item.longitude, label=item.reg_number or "?")
-        for item in aircraft
+        AircraftPoint(lat=item.latitude, lon=item.longitude, label=str(index))
+        for index, item in enumerate(aircraft, start=1)
         if item.latitude is not None and item.longitude is not None
     ]
 

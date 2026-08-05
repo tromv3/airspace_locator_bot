@@ -39,7 +39,11 @@ class AircraftRepository:
         flags: TypingSequence[str] | None = None,
     ) -> list[Aircraft]:
         conditions = self._build_conditions(user_id, alt_min, alt_max, types, flags)
-        result = await self._session.execute(select(Aircraft).where(*conditions))
+        # Deterministic order so a list numbered "1, 2, 3..." (`filters_show`)
+        # lines up with the same numbers plotted on the map (`filters_draw`).
+        result = await self._session.execute(
+            select(Aircraft).where(*conditions).order_by(Aircraft.id)
+        )
         return list(result.scalars())
 
     async def count_for_user(
