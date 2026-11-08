@@ -120,20 +120,3 @@ bot/
 migrations/     # миграции Alembic
 tests/          # pytest (хендлеры, репозитории, сервисы)
 ```
-
-## Скриншоты интерфейса
-Скриншоты ниже сделаны для предыдущей версии интерфейса.
-
-![Screenshot_1.png](screenshotUI%2FScreenshot_1.png)
-
-![Screenshot_2.png](screenshotUI%2FScreenshot_2.png)
-
-![Screenshot_3.png](screenshotUI%2FScreenshot_3.png)
-
-![Screenshot_4.png](screenshotUI%2FScreenshot_4.png)
-
-![Screenshot_5.png](screenshotUI%2FScreenshot_5.png)
-
-![Screenshot_6.png](screenshotUI%2FScreenshot_6.png)
-
-![Screenshot_7.jpg](screenshotUI%2FScreenshot_7.jpg)
