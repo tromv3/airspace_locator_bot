@@ -25,9 +25,8 @@ LABEL_STROKE_WIDTH = 2
 LABEL_OFFSET_PX = (8, -11)
 
 # OSM tile usage policy requires an identifying User-Agent with contact info:
-# https://operations.osmfoundation.org/policies/tiles/ — fill in the repo URL
-# before deploying, don't put a personal email here.
-TILE_USER_AGENT = "airspace-locator-bot (+https://github.com/<your-username>/airspace-locator_bot)"
+# https://operations.osmfoundation.org/policies/tiles/ — repo URL, not a personal email.
+TILE_USER_AGENT = "airspace-locator-bot (+https://github.com/tromv3/airspace_locator_bot)"
 
 
 @dataclass(frozen=True)
