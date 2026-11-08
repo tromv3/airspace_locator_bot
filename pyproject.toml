@@ -1,0 +1,39 @@
+[project]
+name = "airspace-locator-bot"
+version = "0.2.0"
+description = "Telegram bot for locating nearby aircraft in real time"
+requires-python = ">=3.12"
+dependencies = [
+    "aiogram>=3.30.0",
+    "aiosqlite>=0.22.1",
+    "alembic>=1.18.5",
+    "geopy>=2.5.0",
+    "httpx>=0.28.1",
+    "loguru>=0.7.3",
+    "pydantic-settings>=2",
+    "sqlalchemy[asyncio]>=2.0.51",
+    "staticmap>=0.5.7",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "respx>=0.23.1",
+    "ruff>=0.16.0",
+]
