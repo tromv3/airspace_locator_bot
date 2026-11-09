@@ -14,6 +14,7 @@ from bot.constants import DEFAULT_COMMANDS
 from bot.db.session import create_engine, create_session_maker
 from bot.handlers import setup_routers
 from bot.middlewares.db import DbSessionMiddleware
+from bot.middlewares.ensure_user import EnsureUserMiddleware
 from bot.services.airlabs_client import AirLabsClient
 from bot.services.geocoder_client import DadataClient
 from bot.services.opensky_client import OpenSkyClient
@@ -45,6 +46,8 @@ async def main() -> None:
     bot = Bot(token=settings.bot_token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dispatcher = Dispatcher(storage=MemoryStorage())
     dispatcher.update.middleware(DbSessionMiddleware(session_maker))
+    dispatcher.message.middleware(EnsureUserMiddleware())
+    dispatcher.callback_query.middleware(EnsureUserMiddleware())
     dispatcher["dadata_client"] = dadata_client
     dispatcher["airlabs_client"] = airlabs_client
     dispatcher["opensky_client"] = opensky_client
