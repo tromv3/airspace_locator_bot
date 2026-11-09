@@ -11,6 +11,7 @@ COPY bot ./bot
 COPY migrations ./migrations
 COPY alembic.ini ./
 COPY docker/entrypoint.sh ./docker/entrypoint.sh
-RUN chmod +x ./docker/entrypoint.sh && mkdir -p ./data
+# Strip CRs in case the script was checked out with CRLF endings on Windows.
+RUN sed -i 's/\r$//' ./docker/entrypoint.sh && chmod +x ./docker/entrypoint.sh && mkdir -p ./data
 
 ENTRYPOINT ["./docker/entrypoint.sh"]
