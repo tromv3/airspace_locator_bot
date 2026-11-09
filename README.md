@@ -3,7 +3,6 @@
 в режиме реального времени: списком и на карте.**
 
 - Репозиторий: [tromv3/airspace_locator_bot](https://github.com/tromv3/airspace_locator_bot)
-- Бот в Telegram: [AirSpaceLocator](https://t.me/AirLocatorBot)
 - Попробовать бота можно здесь: [@air_radar_bot](https://t.me/air_radar_bot)
 
 ## Возможности
